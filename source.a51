@@ -1,0 +1,10 @@
+ORG 0000H
+
+MOV A, #0
+MOV P1, A
+
+MOV A, #0FFH
+MOV A, P1
+
+
+END
