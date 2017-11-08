@@ -1,3 +1,5 @@
 */
 *.uvproj
-*.inc
+*.uvgui.*
+*.uvopt
+*.in
