@@ -42,6 +42,13 @@ B_7 EQU 0F7H
 MOV A, #69H
 MOV B, #42H
 
+;-----------------------------------------------------------
+;Start timer
+MOV TMOD, #00010000B	; Use Mode 1 of Timer 1 as internal timing
+MOV TH1, #0				; Initialize timer to 0000H
+MOV TL1, #0				 
+SETB TCON.6 			; Start Timer
+
 ///////////////sets registers to hold address values
 
 ;/////////Carry Generation/////////////////////////////////
@@ -438,4 +445,7 @@ NEXT6:   MOV ACC.6, C
 
 ;Moves Sum into bit 7 of A
 NEXT7:   MOV ACC.7, C
+
+
+; Grab output of timer
 END
