@@ -98,15 +98,15 @@ B_6 EQU 0F6H
 B_7 EQU 0F7H
 
 
-
-
-
-
-
-
 ; Begin program
 
 MOV R0, #BYTE0_LOC
+
+; Start timer
+MOV TMOD, #00010000B	; Use Mode 1 of Timer 1 as internal timing
+MOV TH1, #0				; Initialize timer to 0000H
+MOV TL1, #0				 
+SETB TCON.6 			; Start Timer
 
 ; Load the next operand values into B and A registers
 CLR A
@@ -124,6 +124,8 @@ LCALL CALC_8
 MOV R1, A
 
 ; Result stored in registers R1 - R7 and A
+
+; ***Grab output of timer***
 
 LJMP TO_END
 
@@ -533,4 +535,5 @@ NEXT7:   MOV ACC.7, C
 RET
 
 TO_END:
+
 END
