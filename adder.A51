@@ -2,7 +2,7 @@
 MAX_OP_SIZE EQU 1
 
 ; Byte 0
-BYTE0_VAL EQU 001H
+BYTE0_VAL EQU 003H
 BYTE1_VAL EQU 002H
 BYTE2_VAL EQU 003H
 BYTE3_VAL EQU 004H
@@ -12,7 +12,7 @@ BYTE6_VAL EQU 007H
 BYTE7_VAL EQU 008H
 
 ; Byte 1
-BYTE8_VAL EQU 001H
+BYTE8_VAL EQU 009H
 BYTE9_VAL EQU 002H
 BYTE10_VAL EQU 003H
 BYTE11_VAL EQU 004H
@@ -339,7 +339,15 @@ OVER8: 	MOV P_7, C
 		ANL C, G1
 		ORL C, C5
 		MOV C5, C
-		CLR C		
+		CLR C	
+		MOV C, P_1
+		ANL C, P_2
+		ANL C, P_3
+		ANL C, P_4
+		ANL C, G0
+		ORL C, C5
+		MOV C5, C
+		CLR C
 		MOV C, P_0
 		ANL C, P_1
 		ANL C, P_2
@@ -377,6 +385,15 @@ OVER8: 	MOV P_7, C
 		ANL C, P_4
 		ANL C, P_5
 		ANL C, G1
+		ORL C, C6
+		MOV C6, C
+		CLR C
+		MOV C, P_1
+		ANL C, P_2
+		ANL C, P_3
+		ANL C, P_4
+		ANL C, P_5
+		ANL C, G0
 		ORL C, C6
 		MOV C6, C
 		CLR C
@@ -430,6 +447,16 @@ OVER8: 	MOV P_7, C
 		ORL C, C7
 		MOV C7, C
 		CLR C
+		MOV C, P_1
+		ANL C, P_2
+		ANL C, P_3
+		ANL C, P_4
+		ANL C, P_5
+		ANL C, P_6
+		ANL C, G1
+		ORL C, C7
+		MOV C7, C
+		CLR C
 		MOV C, P_0
 		ANL C, P_1
 		ANL C, P_2
@@ -441,7 +468,79 @@ OVER8: 	MOV P_7, C
 		ORL C, C7
 		MOV C7, C
 		
-		
+;C8 term = G7 + G6P_7 + G5P_6P_7 + G4P_5P_6P_7 + G3P_4P_5P_6P_7 + G2P_3P_4P_5P_6P_7 + G1P_2P_3P_4P_5P_6P_7 + G0P_1P_2P_3P_4P_5P_6P_7 + C0P_0P_1P_2P_3P_4P_5P_6P_7
+		CLR C
+		MOV C, G7
+		MOV C8, C
+		CLR C
+		MOV C, G6
+		ANL C, P_7
+		ORL C, C8
+		MOV C8, C
+		CLR C
+		MOV C, P_6
+		ANL C, P_7
+		ANL C, G5
+		ORL C, C8
+		MOV C8, C
+		CLR C
+		MOV C, P_5
+		ANL C, P_6
+		ANL C, P_7
+		ANL C, G4
+		ORL C, C8
+		MOV C8, C
+		CLR C		
+		MOV C, P_4
+		ANL C, P_5
+		ANL C, P_6
+		ANL C, P_7
+		ANL C, G3
+		ORL C, C8
+		MOV C8, C
+		CLR C
+		MOV C, P_3
+		ANL C, P_4
+		ANL C, P_5
+		ANL C, P_6
+		ANL C, P_7
+		ANL C, G2
+		ORL C, C8
+		MOV C8, C
+		CLR C
+		MOV C, P_2
+		ANL C, P_3
+		ANL C, P_4
+		ANL C, P_5
+		ANL C, P_6
+		ANL C, P_7
+		ANL C, G1
+		ORL C, C8
+		MOV C8, C
+		CLR C
+		MOV C, P_1
+		ANL C, P_2
+		ANL C, P_3
+		ANL C, P_4
+		ANL C, P_5
+		ANL C, P_6
+		ANL C, P_7
+		ANL C, G0
+		ORL C, C8
+		MOV C8, C
+		CLR C
+		MOV C, P_0
+		ANL C, P_1
+		ANL C, P_2
+		ANL C, P_3
+		ANL C, P_4
+		ANL C, P_5
+		ANL C, P_6
+		ANL C, P_7
+		ANL C, C0
+		ORL C, C8
+		MOV C8, C
+
 ;///////////////SMASH THAT SUM BUTTON/////////////////////////////////////
 ;XOR P_0 with Cin to generate sum	
 ;store C0 to RAM location 20H(bit address 00H)
