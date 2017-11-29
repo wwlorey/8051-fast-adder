@@ -1,25 +1,25 @@
 ; Operand definitions
-MAX_OP_SIZE EQU 1
+MAX_OP_SIZE EQU 2
 
 ; Byte 0
-BYTE0_VAL EQU 003H
-BYTE1_VAL EQU 002H
-BYTE2_VAL EQU 003H
-BYTE3_VAL EQU 004H
-BYTE4_VAL EQU 005H
-BYTE5_VAL EQU 006H
-BYTE6_VAL EQU 007H
-BYTE7_VAL EQU 008H
+BYTE0_VAL EQU 0FFH
+BYTE1_VAL EQU 1FH
+BYTE2_VAL EQU 03H
+BYTE3_VAL EQU 04H
+BYTE4_VAL EQU 05H
+BYTE5_VAL EQU 06H
+BYTE6_VAL EQU 07H
+BYTE7_VAL EQU 08H
 
 ; Byte 1
-BYTE8_VAL EQU 009H
-BYTE9_VAL EQU 002H
-BYTE10_VAL EQU 003H
-BYTE11_VAL EQU 004H
-BYTE12_VAL EQU 005H
-BYTE13_VAL EQU 006H
-BYTE14_VAL EQU 007H
-BYTE15_VAL EQU 008H
+BYTE8_VAL EQU 22H
+BYTE9_VAL EQU 0A2H
+BYTE10_VAL EQU 03H
+BYTE11_VAL EQU 04H
+BYTE12_VAL EQU 05H
+BYTE13_VAL EQU 06H
+BYTE14_VAL EQU 07H
+BYTE15_VAL EQU 08H
 
 ; Operands locations in RAM
 BYTE0_LOC EQU 30H
@@ -38,6 +38,17 @@ BYTE6_LOC EQU 3CH
 BYTE14_LOC EQU 3DH
 BYTE7_LOC EQU 3EH
 BYTE15_LOC EQU 3FH
+
+;Sum locations in RAM
+SUM_BYTE_0 EQU 40H
+SUM_BYTE_1 EQU 41H
+SUM_BYTE_2 EQU 42H
+SUM_BYTE_3 EQU 43H
+SUM_BYTE_4 EQU 44H	
+SUM_BYTE_5 EQU 45H
+SUM_BYTE_6 EQU 46H
+SUM_BYTE_7 EQU 47H
+SUM_OVERFLOW EQU 48H
 
 ; Load operands
 MOV BYTE0_LOC, #BYTE0_VAL
@@ -100,34 +111,44 @@ B_7 EQU 0F7H
 
 ; Begin program
 
-MOV R0, #BYTE0_LOC
+	MOV R0, #BYTE0_LOC
+	MOV R1, #SUM_BYTE_7
+	MOV R2, #MAX_OP_SIZE
+    CLR C
+	MOV C8, C
+	
+	; Start timer
+	MOV TMOD, #00010000B	; Use Mode 1 of Timer 1 as internal timing
+	MOV TH1, #0				; Initialize timer to 0000H
+	MOV TL1, #0				 
+	SETB TCON.6 			; Start Timer
+BEGINING:
+	; Load the next operand values into B and A registers
+	CLR A
+	MOV A, @R0
 
-; Start timer
-MOV TMOD, #00010000B	; Use Mode 1 of Timer 1 as internal timing
-MOV TH1, #0				; Initialize timer to 0000H
-MOV TL1, #0				 
-SETB TCON.6 			; Start Timer
+	INC R0
 
-; Load the next operand values into B and A registers
-CLR A
-MOV A, @R0
+	MOV B, @R0
 
-INC R0
+	INC R0
 
-MOV B, @R0
+	; Perform addition
+	LCALL CALC_8
 
-INC R0
+	;stores answer in RAM
+	MOV @R1, A
 
-; Perform addition
-LCALL CALC_8
+	;moves to next spot in RAM for multiple byte answers
+	DEC R1
 
-MOV R1, A
+    ;loop
+	DJNZ R2, BEGINING
 
-; Result stored in registers R1 - R7 and A
+	; ***Grab output of timer***
+    CLR TR0
 
-; ***Grab output of timer***
-
-LJMP TO_END
+	LJMP TO_END
 
 
 
@@ -233,8 +254,9 @@ OVER8: 	MOV P_7, C
 
 		
 ;calculates carry terms
-/////////////C0 is 0 to add
-        CLR C
+        ;C0 is 0 to add
+        ;puts value of C8 into C0 for chaining multiple blocks
+		MOV C, C8
 		MOV C0, C
 		
 ; C1 term = G0 + P_0C0
@@ -629,6 +651,7 @@ NEXT6:   MOV ACC.6, C
 
 ;Moves Sum into bit 7 of A
 NEXT7:   MOV ACC.7, C
+
 
 
 RET
